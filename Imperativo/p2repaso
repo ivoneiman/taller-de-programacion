@@ -1,0 +1,193 @@
+program p2repaso;
+
+
+
+
+type
+
+	anos = 2010..2018;
+
+	auto = record
+		patente:integer;
+		ano:anos;
+		marcaYModelo:string[60];
+	end;
+	
+	
+	arbol = ^nodoArbol;
+	nodoArbol = record
+		dato:auto;
+		HI:arbol;
+		HD:arbol;
+	end;
+	
+	
+	lista = ^nodo;
+	nodo = record
+		dato:auto;
+		sig:lista;
+	end;
+	
+	marcas = record
+		marca:string[60];
+		autos:lista;
+	end;
+	
+	arbol2 = ^nodoArbol2;
+	nodoArbol2 = record
+		dato: marcas;
+		HI:arbol2;
+		HD:arbol2;
+	end;
+	
+	procedure  incisoA(var a1:arbol; var a2:arbol2);
+		
+		procedure agregarAdelante(var l:lista; a:auto);
+		var
+			nue:lista;
+		begin
+			new(nue);
+			nue^.dato := a;
+			nue^.sig := l;
+			l:=nue;
+		end;
+	
+		procedure leerAuto (var a:auto);
+		begin
+			writeln('ingresar una patente');
+			readln(a.patente);
+			if (a.patente <> 0) then begin
+				a.ano := Random (18)+2000;
+				writeln('leer un modelo para la patente ',a.patente,': ');
+				readln(a.marcaYModelo);
+			end;
+		end;
+		
+		procedure igualarAuto (var m:marcas; a:auto);
+		begin
+			m.marca := a.marcaYModelo;
+		end;
+		
+		procedure agregarAlArbol(var a1:arbol;a:auto);
+		begin
+			if (a1 = nil) then begin
+				new(a1);
+				a1^.dato := a;
+				a1^.HI := nil;
+				a1^.HD := nil;
+				writeln('se agrego al arbol 1')
+			end
+			else if (a.patente > a1^.dato.patente) then
+				agregarAlArbol(a1^.HD,a)
+			else if (a.patente <= a1^.dato.patente) then
+				agregarAlArbol(a1^.HI,a)
+		end;
+		
+		procedure agregarAlArbol2(var a2:arbol2; a:auto; var m:marcas);
+		begin
+			if (a2 = nil) then begin
+				new(a2);
+				m.autos := nil;
+				agregarAdelante(m.autos,a);
+				writeln('Se creo un nuevo nodo de la marca ',m.marca,' y se agrego un auto a su lista');
+				a2^.dato := m;
+				a2^.HI:=nil;
+				a2^.HD:=nil;
+				writeln('se agrego al arbol 2')
+			end
+			else if (a2^.dato.marca < m.marca) then
+				agregarAlArbol2(a2^.HD,a,m)
+			else if (a2^.dato.marca > m.marca) then
+				agregarAlArbol2(a2^.HI,a,m)
+			else begin
+				agregarAdelante(a2^.dato.autos,a);
+				writeln('se agrego un nuevo auto a la lista de la marca: ',a2^.dato.marca);
+			end;
+		end;
+		
+	var
+		a:auto;
+		m:marcas;
+	begin
+		leerAuto(a);
+		a1:=nil;
+		a2:=nil;
+		while (a.patente <> 0) do begin
+			agregarAlArbol(a1,a);
+			igualarAuto(m,a);
+			agregarAlArbol2(a2,a,m);
+			leerAuto(a);
+		end;
+	end;
+	
+	
+	function cantArbol1 (a:arbol; x:string):integer;
+	begin
+		if (a <> nil) then begin
+			if (a^.dato.marcaYModelo = x) then
+				cantArbol1 := 1 + cantArbol1(a^.HD,x) + cantArbol1(a^.HI,x)
+			else if (x < a^.dato.marcaYModelo) then
+				cantArbol1 := cantArbol1(a^.HI,x)
+			else if (x > a^.dato.marcaYModelo) then
+				cantArbol1 := cantArbol1(a^.HD,x)
+		end
+		else	
+			cantArbol1:=0;
+	end;
+	
+	function contarLista (l:lista):integer;
+	begin
+		contarLista := 0;
+		if (l<>nil) then
+			contarLista:= 1 + contarLista(l^.sig)
+	end;
+	
+	function cantArbol2 (a:arbol2; x:string):integer;
+	begin
+		if (a <> nil) then begin
+			if (a^.dato.marca = x) then
+				cantArbol2 := contarLista(a^.dato.autos)
+			else if (a^.dato.marca < x) then
+				cantArbol2:= 0 + cantArbol2(a^.HD,x)
+			else if (a^.dato.marca > x) then
+				cantArbol2:= 0 + cantArbol2(a^.HI,x)
+		end
+		else
+			cantArbol2 := 0;
+	end;
+	
+	// pp
+	
+	var
+		a1:arbol;
+		a2:arbol2;
+		x:string;
+	begin
+		incisoA(a1,a2);
+		x:='audi';
+		writeln('La cantidad de autos de la marca ',x,' que posee la agencia es de ',cantArbol1(a1,x));
+		x:='toyota';
+		writeln('La cantidad de autos de la marca ',x,' que posee la agencia en el arbol 2 es de ',cantArbol2(a2,x));
+	End.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+	

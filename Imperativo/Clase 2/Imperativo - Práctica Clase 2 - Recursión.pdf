@@ -1,0 +1,30 @@
+program punto1;
+const
+	dimf=10;
+type
+	vector = array[1..dimf] of char;
+	
+	procedure retornarVector (var v:vector; var diml:integer);
+	var
+		s:char;
+	begin
+		writeln('---');
+		writeln('Ingrese un caracter');
+		readln(s);
+		if (diml <= dimf) and (s <> '.') then begin
+			v[diml] := s;
+			writeln('---');
+			writeln('Se agregó un elemento al vector en la posición ', diml);
+			diml:=diml+1;
+			retornarVector(v,diml);
+		end;
+	end;
+	
+var
+	diml:integer;
+	v:vector;
+begin
+	diml:=0;
+	retornarVector(v,diml);
+End.
+			
