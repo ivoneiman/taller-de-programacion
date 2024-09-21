@@ -1,0 +1,165 @@
+programa parcial3
+procesos
+  proceso enviarMedidas(E cont:numero)
+  variables
+    ancho,alto,cont:numero
+  comenzar
+    cont:=0
+    repetir 3
+      cont:=cont+1
+      Random(ancho,2,6)
+      Random(alto,2,11)
+      si (cont = 1)
+        EnviarMensaje(ancho,r1)
+        EnviarMensaje(alto,r1)
+      sino
+        si (cont = 2)
+          EnviarMensaje(ancho,r2)
+          EnviarMensaje(alto,r2)
+        sino
+          EnviarMensaje(ancho,r3)
+          EnviarMensaje(alto,r3)
+  fin
+  proceso recorrerAlto(E alto:numero; ES f:numero)
+  variables
+    av,ca:numero
+  comenzar
+    alto := alto-1
+    repetir alto
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        f:=f+1
+      mover
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        f:=f+1
+    av:=PosAv
+    ca:=PosCa
+    mientras (HayFlorEnLaBolsa)
+      BloquearEsquina(25,25)
+      Pos(25,25)
+      si(HayFlorEnLaBolsa)
+        depositarFlor
+      Pos(av,ca)
+      LiberarEsquina(25,25)
+  fin
+  proceso recorrerAncho(E ancho:numero; ES f:numero)
+  variables
+    av,ca:numero
+  comenzar
+    ancho:=ancho-1
+    repetir ancho
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        f:=f+1
+      mover
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f:=f+1
+    av:=PosAv
+    ca:=PosCa
+    mientras HayFlorEnLaBolsa
+      BloquearEsquina(25,25)
+      Pos(25,25)
+      si HayFlorEnLaBolsa
+        depositarFlor
+      Pos(av,ca)
+      LiberarEsquina(25,25)
+  fin
+  proceso maximo (ES rMax:numero; E fR1:numero; E fR2:numero; E fR3: numero)
+  variables
+    max:numero
+  comenzar
+    max:=-1
+    repetir 3
+      si (fR1 > max)
+        max:=fR1
+        rMax:=1
+      sino
+        si (fR2 > max)
+          max:=fR2
+          rMax:=2
+        sino
+          si (fR3> max)
+            max:=fR3
+            rMax:=3
+  fin
+areas
+  AreaR1:AreaP(1,1,6,11)
+  AreaR2:AreaP(7,1,12,11)
+  AreaR3:AreaP(13,1,18,11)
+  AreaJefe:AreaP(24,24,24,24)
+  AreaDepositar:AreaPC(25,25,25,25)
+robots
+  robot jefe
+  variables
+    rMax,terminaron,id,fR1,fR2,fR3,flores:numero
+    rtsFin:boolean
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    fR1:= 0
+    fR2:= 0
+    fR3:= 0
+    terminaron:=0
+    enviarMedidas(0)
+    mientras (terminaron < 3)
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(rtsFin,r1)
+        si (rtsFin=V)
+          RecibirMensaje(fR1,r1)
+          terminaron := terminaron+1
+      sino
+        si(id=2)
+          RecibirMensaje(rtsFin,r2)
+          si (rtsFin = V)
+            RecibirMensaje(fR2,r2)
+            terminaron := terminaron+1
+        sino
+          RecibirMensaje(rtsFin,r3)
+          si (rtsFin = V)
+            RecibirMensaje(fR3,r3)
+            terminaron := terminaron+1
+    maximo(rMax,fR1,fR2,fR3)
+    Informar('el_r_max_fue_el_r',rMax)
+  fin
+  robot recolector
+  variables
+    ancho,alto,f,id:numero
+    ok:boolean
+  comenzar
+    RecibirMensaje(id,jefe)
+    RecibirMensaje(ancho,jefe)
+    RecibirMensaje(alto,jefe)
+    ok:=F
+    f:=0
+    repetir 2
+      recorrerAlto(alto,f)
+      derecha
+      recorrerAncho(ancho,f)
+      derecha
+    ok:=V
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(ok,jefe)
+    EnviarMensaje(f,jefe)
+  fin
+variables
+  r1:recolector
+  r2:recolector
+  r3:recolector
+  jefe:jefe
+comenzar
+  AsignarArea(r1,AreaR1)
+  AsignarArea(r2,AreaR2)
+  AsignarArea(r3,AreaR3)
+  AsignarArea(r1,AreaDepositar)
+  AsignarArea(r2,AreaDepositar)
+  AsignarArea(r3,AreaDepositar)
+  AsignarArea(jefe,AreaJefe)
+  Iniciar(r1,1,1)
+  Iniciar(r2,7,1)
+  Iniciar(r3,13,1)
+  Iniciar(jefe,24,24)
+fin

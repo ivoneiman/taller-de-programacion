@@ -1,0 +1,123 @@
+programa elsupermaleducado
+procesos
+  proceso recorrerLado(E lado:numero; E id:numero ES f:numero)
+  variables
+    completeLado:boolean
+  comenzar
+    completeLado:=F
+    repetir lado
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f:=f+1
+      mover
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+    completeLado:=V
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(completeLado,jefe)
+  fin
+  proceso recibirRobotsLado(ES terminaron:numero)
+  variables
+    id:numero
+    ok:boolean
+  comenzar
+    mientras (terminaron < 3)
+      RecibirMensaje(id,*)
+      si id = 1
+        RecibirMensaje(ok,r1)
+        terminaron:=terminaron + 1
+      sino
+        si id = 2
+          RecibirMensaje(ok,r2)
+          terminaron:=terminaron+1
+        sino
+          RecibirMensaje(ok,r3)
+          terminaron:=terminaron+1
+  fin
+  proceso maximo (ES rMax:numero; E fR1:numero; E fR2:numero; E fR3:numero)
+  variables
+    max:numero
+  comenzar
+    max:=-1
+    repetir 3
+      si fR1>max
+        max:=fR1
+        rMax:=1
+      sino
+        si fR2>max
+          max:=fR2
+          rMax:=2
+        sino
+          max:=fR3
+          rMax:=3
+  fin
+areas
+  areaR1:AreaP(1,1,6,6)
+  areaR2:AreaP(7,1,12,6)
+  areaR3:AreaP(13,1,18,6)
+  areaJ:AreaP(20,1,20,1)
+  AreaDepositar:AreaPC(10,10,10,10)
+robots
+  robot jefe
+  variables
+    terminaron,cuadrado,rMax,fR1,fR2,fR3,id:numero
+    ok,seguir:boolean
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    cuadrado:=0
+    terminaron:=0
+    mientras cuadrado < 4
+      mientras terminaron<3
+        recibirRobotsLado(terminaron)
+      si (terminaron = 3)
+        EnviarMensaje(seguir,r1)
+        EnviarMensaje(seguir,r2)
+        EnviarMensaje(seguir,r3)
+      cuadrado:=cuadrado+1
+      terminaron:=0
+    repetir 3
+      RecibirMensaje(id,*)
+      si id = 1
+        RecibirMensaje(fR1,r1)
+      sino
+        si id = 2
+          RecibirMensaje(fR2,r2)
+        sino
+          RecibirMensaje(fR3,r3)
+    maximo(rMax,fR1,fR2,fR3)
+    Informar('ganador_es_r',rMax)
+  fin
+  robot trabajador
+  variables
+    id,f,lado:numero
+    seguir:boolean
+  comenzar
+    RecibirMensaje(id,jefe)
+    lado:=5
+    repetir 4
+      recorrerLado(lado,id,f)
+      RecibirMensaje(seguir,jefe)
+      derecha
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(f,jefe)
+  fin
+variables
+  r1:trabajador
+  r2:trabajador
+  r3:trabajador
+  jefe:jefe
+comenzar
+  AsignarArea(r1,areaR1)
+  AsignarArea(r2,areaR2)
+  AsignarArea(r3,areaR3)
+  AsignarArea(r1,AreaDepositar)
+  AsignarArea(r2,AreaDepositar)
+  AsignarArea(r3,AreaDepositar)
+  AsignarArea(jefe,areaJ)
+  Iniciar(r1,1,1)
+  Iniciar(r2,7,1)
+  Iniciar(r3,13,1)
+  Iniciar(jefe,20,1)
+fin

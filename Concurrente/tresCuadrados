@@ -1,0 +1,109 @@
+programa tresCuadrados
+procesos
+  proceso tomarFloresYPapeles(E flores:numero)
+  comenzar
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+    mientras HayPapelEnLaEsquina
+      tomarPapel
+  fin
+  proceso recorrerCuadrado(E avBloq:numero;E caBloq:numero; E id:numero)
+  variables
+    miAv,miCa,lados:numero
+    seguir,termineCuadrado:boolean
+  comenzar
+    lados:=0
+    repetir 4
+      repetir 4
+        tomarFloresYPapeles(0)
+        miAv:=PosAv
+        miCa:=PosCa
+        si ((miAv = avBloq) & (miCa = (caBloq+1))) | ((miAv = avBloq) & (miCa = (caBloq-1)))=
+          BloquearEsquina(avBloq,caBloq)
+          Pos(avBloq,caBloq)
+          tomarFloresYPapeles(0)
+          derecha
+          mover
+          LiberarEsquina(avBloq,caBloq)
+        sino
+          mover
+      derecha
+    termineCuadrado:=V
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(termineCuadrado,jefe)
+  fin    
+areas
+  areaRts:AreaC(1,1,100,100)
+robots
+  robot juntador
+  variables
+    seguir:boolean
+    avBloq,caBloq,id,cuadrados:numero
+  comenzar
+    RecibirMensaje(id,jefe)
+    si (id=1)
+      Pos(5,11)
+      avBloq:=9
+      caBloq:=11
+      recorrerCuadrado(avBloq,caBloq,id)
+      RecibirMensaje(seguir,jefe)
+      Pos (15,11)
+      avBloq:=19
+      recorrerCuadrado(avBloq,caBloq,id)
+      RecibirMensaje(seguir,jefe)
+      Pos(25,11)
+      avBloq:=29
+      recorrerCuadrado(avBloq,caBloq,id)
+    sino
+      si id = 2
+        Pos (9,7)
+        avBloq:=9
+        caBloq:=11
+        recorrerCuadrado(avBloq,caBloq,id)
+        RecibirMensaje(seguir,jefe)
+        Pos(19,7)
+        avBloq:=19
+        recorrerCuadrado(avBloq,caBloq,id)
+        RecibirMensaje(seguir,jefe)
+        Pos(29,7)
+        avBloq:=29
+        recorrerCuadrado(avBloq,caBloq,id)
+  fin
+  robot jefe
+  variables
+    termine,seguir:boolean
+    etapas,id,terminaron:numero
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    seguir:=V
+    etapas := 0
+    repetir 3
+      etapas:=etapas+1
+      terminaron:=0
+      mientras(terminaron<2)
+        RecibirMensaje(id,*)
+        si id = 1
+          RecibirMensaje(termine,r1)
+          si terminaron = 0
+            Informar('termino_primero_el_r1_en_la_etapa_',etapas)
+        sino
+          RecibirMensaje(termine,r2)
+          si terminaron = 0
+            Informar('termino_primero_el_r2_en_la_etapa_',etapas)
+        terminaron:=terminaron+1
+      EnviarMensaje(seguir,r1)
+      EnviarMensaje(seguir,r2)
+  fin
+variables
+  r1:juntador
+  r2:juntador
+  jefe:jefe
+comenzar
+  AsignarArea(r1,areaRts)
+  AsignarArea(r2,areaRts)
+  AsignarArea(jefe,areaRts)
+  Iniciar(r1,2,2)
+  Iniciar(r2,3,3)
+  Iniciar(jefe,1,1)
+fin

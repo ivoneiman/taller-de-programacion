@@ -1,0 +1,89 @@
+programa tresCuadrados
+procesos
+  proceso tomarFloresYPapeles(E flores:numero)
+  comenzar
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+    mientras HayPapelEnLaEsquina
+      tomarPapel
+  fin
+  proceso recorrerCuadrado(E avBloq:numero;E caBloq:numero)
+  variables
+    miAv,miCa,lados:numero
+    termineLado:boolean
+  comenzar
+    lados:=0
+    repetir 4
+      repetir 5
+        tomarFloresYPapeles(0)
+        miAv:=PosAv
+        miCa:=PosCa
+        si ((miAv = 9 && miCa = 12) | (miAv = 9 && miCa == 10)=
+          BloquearEsquina(avBloq,caBloq)
+          Pos(avBloq,caBloq)
+          tomarFloresYPapeles(0)
+          derecha
+          mover
+          LiberarEsquina(avBloq,caBloq)
+        sino
+          mover
+      termineLado:=V
+      EnviarMensaje(termineLado,jefe)
+
+  fin    
+areas
+  areaRts:AreaC(1,1,100,100)
+robots
+  robot juntador
+  variables
+    seguir:boolean
+    avBloq,caBloq,id,cuadrados:numero
+  comenzar
+    RecibirMensaje(id,jefe)
+    si (id=1)
+      Pos(11,15)
+      avBloq:=9
+      caBloq:=11
+      recorrerCuadrado(avBloq,caBloq)
+      RecibirMensaje(seguir,jefe)
+      Pos (15,11)
+      avBloq:=19
+      recorrerCuadrado(avBloq,caBloq)
+      RecibirMensaje(seguir,jefe)
+      Pos(25,29)
+      avBloq:=29
+      recorrerCuadrado(avBloq,caBloq)
+    sino
+      si id = 2
+        Pos (9,7)
+        avBloq:=9
+        caBloq:=11
+        recorrerCuadrado(avBloq,caBloq)
+        RecibirMensaje(seguir,jefe)
+        Pos(19,7)
+        avBloq:=19
+        recorrercuadrado(avBloq,caBloq)
+        RecibirMensaje(seguir,jefe)
+        Pos(29,7)
+        avBloq:=29
+        recorrercuadrado(avBloq,caBloq)
+  fin
+  robot jefe
+  variables
+    seguir:boolean
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+  fin
+variables
+  r1:juntador
+  r2:juntador
+  jefe:jefe
+comenzar
+  AsignarArea(r1,areaRts)
+  AsignarArea(r2,areaRts)
+  AsignarArea(jefe,areaRts)
+  Iniciar(r1,2,2)
+  Iniciar(r2,3,3)
+  Iniciar(jefe,1,1)
+fin
